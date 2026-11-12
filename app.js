@@ -1490,16 +1490,20 @@ function saveResource(id) {
 }
 
 /* ── 导出 / 导入 / 重置 ── */
+function downloadText(filename, text, mime) {
+  const blob = new Blob([text], { type: mime });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
 function exportJSON() {
   const out = JSON.parse(JSON.stringify(S));
   delete out._rev;
-  const blob = new Blob([JSON.stringify(out, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'study-bench-team-' + today() + '.json';
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
-  toast('团队备份已导出：' + a.download, 'ok');
+  const name = 'study-bench-team-' + today() + '.json';
+  downloadText(name, JSON.stringify(out, null, 2), 'application/json');
+  toast('团队备份已导出：' + name, 'ok');
 }
 function handleImportFile(file) {
   const reader = new FileReader();
@@ -1616,7 +1620,7 @@ function renderConnection() {
   const desc = $('#connShareDesc');
   if (desc) desc.textContent = isServer
     ? '局域网可用时优先实时同步；分享码用于把进度离线带给不在同一网络的队友，合并后双方打卡与课时进度自动汇总。'
-    : '当前无局域网：把团队进度压成一段分享码，用微信 / QQ 发给队友，对方粘贴后点「合并」即可汇总双方打卡与课时进度（按 id 合并，不覆盖你的数据）。';
+    : '当前无局域网：生成分享码后点「存为文件」下载 .txt，用微信 / QQ 以文件发给队友（码长 2 万余字符，直接发文本会被截断）；对方粘贴后点「合并」即可汇总双方打卡与课时进度（按 id 合并，不覆盖你的数据）。';
 }
 async function genShare() {
   if (ui.shareBusy) return;
@@ -1627,7 +1631,7 @@ async function genShare() {
     const out = $('#shareOut'); if (out) out.value = code;
     const meta = $('#shareOutMeta');
     if (meta) meta.innerHTML = icon('check') + '<span>已生成 · ' + code.length + ' 字符 · 含 ' + S.checkins.length + ' 条打卡 / ' + S.modules.length + ' 模块 / ' + (S.hardware || []).length + ' 装备</span>';
-    toast('分享码已生成，复制后发给队友', 'ok');
+    toast('分享码已生成，可存为文件或复制后发给队友', 'ok');
   } catch (e) { toast('生成失败：' + (e.message || '浏览器不支持压缩'), 'danger'); }
   finally { ui.shareBusy = false; if (btn) { btn.disabled = false; btn.innerHTML = icon('share') + '生成我的分享码'; } }
 }
@@ -1639,6 +1643,13 @@ async function copyShare() {
     else { out.removeAttribute('readonly'); out.select(); out.setSelectionRange(0, code.length); const ok = document.execCommand('copy'); out.setAttribute('readonly', ''); if (!ok) throw new Error('copy rejected'); }
     toast('分享码已复制到剪贴板', 'ok');
   } catch (e) { out.removeAttribute('readonly'); out.select(); out.setSelectionRange(0, code.length); toast('自动复制失败，已选中分享码，请手动 Ctrl+C', 'warn'); }
+}
+function saveShare() {
+  const out = $('#shareOut'); const code = out ? out.value : '';
+  if (!code) { toast('请先生成分享码', 'warn'); return; }
+  const name = 'study-bench-share-' + today() + '.txt';
+  downloadText(name, code, 'text/plain');
+  toast('分享码已存为文件：' + name, 'ok');
 }
 async function importShare() {
   const inp = $('#shareIn'); const code = inp ? inp.value.trim() : '';
@@ -1737,6 +1748,7 @@ document.addEventListener('click', e => {
     case 'reset': resetAll(); break;
     case 'gen-share': genShare(); break;
     case 'copy-share': copyShare(); break;
+    case 'save-share': saveShare(); break;
     case 'import-share': importShare(); break;
     case 'modal-close': closeModal(); break;
     case 'confirm-ok': { const fn = ui.confirmFn; closeModal(); if (fn) fn(); break; }
