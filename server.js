@@ -2,7 +2,6 @@
    学习工作台 · 局域网同步服务（零依赖，node server.js）
    ─ 三台电脑共用一份团队数据：一人启动，其余浏览器访问 http://<本机IP>:8787
    ─ 静态托管前端 + 登录鉴权 + 团队状态读写，持久化到 data/team.json
-   ─ 凭据（passHash）只留在服务端，/api/state 返回时剥离，杜绝哈希回放
    ═══════════════════════════════════════════════════════════ */
 'use strict';
 const http = require('http');
@@ -43,11 +42,9 @@ function loadTeam() {
         if (t.version === 3) { SEED.upgradeToV4(t); t._rev++; saveTeam(t); }
         return t;
       }
-      /* v2 → v4：结构升级为新种子（阶段 / 模块库主线 / 课时 / 项目 / 硬件），保留真实打卡与已改密码 */
+      /* v2 → v4：结构升级为新种子（阶段 / 模块库主线 / 课时 / 项目 / 硬件），保留真实打卡 */
       const fresh = SEED.buildState();
       if (Array.isArray(t.checkins)) fresh.checkins = t.checkins;
-      const oldPass = new Map(t.members.map(m => [m.id, m.passHash]));
-      fresh.members.forEach(m => { const h = oldPass.get(m.id); if (/^[0-9a-f]{64}$/.test(h)) m.passHash = h; });
       fresh._rev = (typeof t._rev === 'number' ? t._rev : 1) + 1;
       saveTeam(fresh);
       return fresh;
@@ -60,11 +57,10 @@ function loadTeam() {
 }
 let TEAM = loadTeam();
 
-/* 返回给客户端的状态：剥离 passHash 与内部 _rev */
+/* 返回给客户端的状态：剥离内部 _rev */
 function publicState() {
   const out = Object.assign({}, TEAM);
   delete out._rev;
-  out.members = TEAM.members.map(m => { const c = Object.assign({}, m); delete c.passHash; return c; });
   return out;
 }
 const memberPublic = () => TEAM.members.map(m => ({ id: m.id, name: m.name, role: m.role, color: m.color }));
@@ -131,17 +127,13 @@ const server = http.createServer(async (req, res) => {
           return send(res, 400, { ok: false, error: '状态格式不正确' });
         }
         SEED.upgradeToV4(incoming);   // 防御：旧 v3 客户端 PUT 不会把团队数据降级（v4 为 no-op）
-        // 保留服务端凭据：按 id 回填 passHash，客户端永远拿不到也不许改
         const oldById = new Map(TEAM.members.map(m => [m.id, m]));
         const seen = new Set();
         const members = (Array.isArray(incoming.members) ? incoming.members : []).map(m => {
-          const old = oldById.get(m.id);
-          const c = Object.assign({}, m); delete c.passHash;
-          c.passHash = old ? old.passHash : SEED.hashPass(String(m.id), SEED.DEFAULT_PASS);
           seen.add(m.id);
-          return c;
+          return Object.assign({}, m);
         });
-        oldById.forEach((m, id) => { if (!seen.has(id)) members.push(m); });   // 不丢任何成员凭据
+        oldById.forEach((m, id) => { if (!seen.has(id)) members.push(m); });   // 客户端漏传的成员不丢
         TEAM = Object.assign({}, incoming, { members, _rev: TEAM._rev + 1 });
         saveTeam(TEAM);
         return send(res, 200, { ok: true, rev: TEAM._rev });

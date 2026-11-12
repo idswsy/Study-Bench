@@ -2,91 +2,13 @@
  * 模块来自《详细学习方案》；资源链接均结合社区攻略/评价核实（verified），
  * type=search 为 B 站站内搜索直达，需站内确认最新合集。
  * 三名成员分工：模块 ownerId 决定归属，打卡 memberId 决定是谁学的。
- * 默认密码 123456（演示用），哈希在运行时计算，不硬编码当前凭据。 */
+ * 登录免密：点击成员卡片即进入，不存在口令与凭据。 */
 (function (root, factory) {
   const api = factory();
   if (typeof module === 'object' && module.exports) module.exports = api;
   if (root) root.SEED = api;
 })(typeof self !== 'undefined' ? self : (typeof globalThis !== 'undefined' ? globalThis : this), function () {
   'use strict';
-
-  const SALT = 'studybench-team';
-  const DEFAULT_PASS = '123456';
-
-  /* ── 纯 JS SHA-256（UTF-8 安全，局域网 http 下也能用，不依赖 crypto.subtle） ── */
-  function utf8(str) {
-    let out = '';
-    for (let i = 0; i < str.length; i++) {
-      const c = str.charCodeAt(i);
-      if (c < 0x80) out += String.fromCharCode(c);
-      else if (c < 0x800) out += String.fromCharCode(0xc0 | (c >> 6), 0x80 | (c & 0x3f));
-      else if (c >= 0xd800 && c <= 0xdbff) {
-        const c2 = str.charCodeAt(++i);
-        const cp = 0x10000 + ((c - 0xd800) << 10) + (c2 - 0xdc00);
-        out += String.fromCharCode(0xf0 | (cp >> 18), 0x80 | ((cp >> 12) & 0x3f), 0x80 | ((cp >> 6) & 0x3f), 0x80 | (cp & 0x3f));
-      } else out += String.fromCharCode(0xe0 | (c >> 12), 0x80 | ((c >> 6) & 0x3f), 0x80 | (c & 0x3f));
-    }
-    return out;
-  }
-  function sha256(input) {
-    const ascii = utf8(String(input));
-    const rr = (v, a) => (v >>> a) | (v << (32 - a));
-    const maxWord = Math.pow(2, 32);
-    let result = '';
-    const words = [];
-    const asciiBitLength = ascii.length * 8;
-    let hash = sha256.h = sha256.h || [];
-    const k = sha256.k = sha256.k || [];
-    let primeCounter = k.length;
-    const isComposite = {};
-    for (let candidate = 2; primeCounter < 64; candidate++) {
-      if (!isComposite[candidate]) {
-        for (let i = 0; i < 313; i += candidate) isComposite[i] = candidate;
-        hash[primeCounter] = (Math.pow(candidate, .5) * maxWord) | 0;
-        k[primeCounter++] = (Math.pow(candidate, 1 / 3) * maxWord) | 0;
-      }
-    }
-    let padded = ascii + '\x80';
-    while (padded.length % 64 - 56) padded += '\x00';
-    for (let i = 0; i < padded.length; i++) {
-      const j = padded.charCodeAt(i);
-      words[i >> 2] |= j << ((3 - i) % 4) * 8;
-    }
-    words[words.length] = (asciiBitLength / maxWord) | 0;
-    words[words.length] = asciiBitLength;
-    for (let j = 0; j < words.length;) {
-      const w = words.slice(j, j += 16);
-      const oldHash = hash;
-      hash = hash.slice(0, 8);
-      for (let i = 0; i < 64; i++) {
-        const w15 = w[i - 15], w2 = w[i - 2];
-        const a = hash[0], e = hash[4];
-        const temp1 = hash[7]
-          + (rr(e, 6) ^ rr(e, 11) ^ rr(e, 25))
-          + ((e & hash[5]) ^ (~e & hash[6]))
-          + k[i]
-          + (w[i] = (i < 16) ? w[i] : (
-            w[i - 16]
-            + (rr(w15, 7) ^ rr(w15, 18) ^ (w15 >>> 3))
-            + w[i - 7]
-            + (rr(w2, 17) ^ rr(w2, 19) ^ (w2 >>> 10))
-          ) | 0);
-        const temp2 = (rr(a, 2) ^ rr(a, 13) ^ rr(a, 22))
-          + ((a & hash[1]) ^ (a & hash[2]) ^ (hash[1] & hash[2]));
-        hash = [(temp1 + temp2) | 0].concat(hash);
-        hash[4] = (hash[4] + temp1) | 0;
-      }
-      for (let i = 0; i < 8; i++) hash[i] = (hash[i] + oldHash[i]) | 0;
-    }
-    for (let i = 0; i < 8; i++) {
-      for (let j = 3; j + 1; j--) {
-        const b = (hash[i] >> (j * 8)) & 255;
-        result += (b < 16 ? '0' : '') + b.toString(16);
-      }
-    }
-    return result;
-  }
-  const hashPass = (id, pass) => sha256(SALT + ':' + id + ':' + pass);
 
   /* ── 团队成员（主流分工：硬件 + 控制/软件 + 视觉/算法，三人皆需会调车） ── */
   const members = [
@@ -1060,7 +982,7 @@
     const ownerOf = {}; mods.forEach(m => { ownerOf[m.id] = m.ownerId; });
     return {
       version: SCHEMA,
-      members: members.map(m => Object.assign({}, m, { passHash: hashPass(m.id, DEFAULT_PASS) })),
+      members: members.map(m => Object.assign({}, m)),
       stages: clone(stages),
       modules: mods,
       hardware: clone(hardware),
@@ -1115,5 +1037,5 @@
     return s;
   }
 
-  return { SALT, DEFAULT_PASS, sha256, hashPass, members, stages, hardware, modules, resources, notePool, buildState, catalog, routeOrder, SCHEMA, upgradeToV4, PHASE_STAGE, legacyMap, instantiate };
+  return { members, stages, hardware, modules, resources, notePool, buildState, catalog, routeOrder, SCHEMA, upgradeToV4, PHASE_STAGE, legacyMap, instantiate };
 });

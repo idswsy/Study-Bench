@@ -2,7 +2,7 @@
    学习工作台 · app.js — 团队多用户：登录 / 分工 / 监督 / 同步
    ─ 存储适配器：boot 探测 /api/ping → 局域网服务 / 本机演示
    ─ 状态 v2：members（分工）+ module.ownerId + checkin.memberId
-   ─ 登录是团队身份门：点击成员卡片免密进入，名称可自定义；服务端凭据只留服务端
+   ─ 登录是团队身份门：点击成员卡片免密进入，名称可自定义
    ═══════════════════════════════════════════════════════════ */
 (function () {
 'use strict';
@@ -151,7 +151,6 @@ function toggleThemeMenu(open) {
 const SAFE_COLOR = /^#[0-9a-fA-F]{6}$/;
 const SAFE_ID = /^[A-Za-z0-9_-]{1,64}$/;
 const SAFE_DATE = /^\d{4}-\d{2}-\d{2}$/;
-const SAFE_HASH = /^[0-9a-f]{64}$/;
 const str = (v, n) => String(v ?? '').slice(0, n);
 const safeUrl = u => /^https?:\/\//i.test(u) ? str(u, 500) : '';
 function validState(s) { return s && Array.isArray(s.modules) && Array.isArray(s.resources) && Array.isArray(s.checkins); }
@@ -182,8 +181,7 @@ function cleanHardware(h) {
   };
 }
 
-function sanitizeState(s, opts) {
-  opts = opts || {};
+function sanitizeState(s) {
   if (s.version !== 4) SEED.upgradeToV4(s);
   let members = Array.isArray(s.members) ? s.members.filter(m => m && typeof m === 'object') : [];
   if (!members.length) members = SEED.members.map(m => Object.assign({}, m));
@@ -192,8 +190,7 @@ function sanitizeState(s, opts) {
     return {
       id, name: str(m.name, 20) || '成员', role: str(m.role, 40),
       color: SAFE_COLOR.test(m.color) ? m.color : '#35c46f',
-      stageId: SAFE_ID.test(m.stageId) ? m.stageId : '', focus: str(m.focus, 80),
-      passHash: SAFE_HASH.test(m.passHash) ? m.passHash : (opts.local ? SEED.hashPass(id, SEED.DEFAULT_PASS) : '')
+      stageId: SAFE_ID.test(m.stageId) ? m.stageId : '', focus: str(m.focus, 80)
     };
   });
   const seen = new Set(); members = members.filter(m => seen.has(m.id) ? false : (seen.add(m.id), true));
@@ -261,19 +258,15 @@ function makeLocalStore() {
       if (raw) {
         const s = JSON.parse(raw);
         if (validState(s)) {
-          if (s.version === 3 || s.version === 4) return sanitizeState(s, { local: true });
-          /* v2 → v4 升级：结构换成新种子（阶段 / 模块库主线 / 课时 / 项目 / 硬件），保留真实打卡与已改密码 */
+          if (s.version === 3 || s.version === 4) return sanitizeState(s);
+          /* v2 → v4 升级：结构换成新种子（阶段 / 模块库主线 / 课时 / 项目 / 硬件），保留真实打卡 */
           const fresh = SEED.buildState();
           if (Array.isArray(s.checkins)) fresh.checkins = s.checkins;
-          if (Array.isArray(s.members)) {
-            const oldPass = new Map(s.members.map(m => [m.id, m.passHash]));
-            fresh.members.forEach(m => { const h = oldPass.get(m.id); if (SAFE_HASH.test(h)) m.passHash = h; });
-          }
-          return sanitizeState(fresh, { local: true });
+          return sanitizeState(fresh);
         }
       }
     } catch (e) { }
-    return sanitizeState(SEED.buildState(), { local: true });
+    return sanitizeState(SEED.buildState());
   }
   let state = readRaw();
   try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { }
@@ -286,7 +279,7 @@ function makeLocalStore() {
       return { memberId: id };
     },
     async logout() { },
-    async loadState() { state = readRaw(); return { state: sanitizeState(state, { local: true }), rev: 0 }; },
+    async loadState() { state = readRaw(); return { state: sanitizeState(state), rev: 0 }; },
     async persist(s) { state = s; try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) { throw new Error('浏览器存储不可用'); } return { rev: 0 }; },
     async renameMember(id, name) {
       const m = state.members.find(x => x.id === id);
@@ -315,7 +308,7 @@ function makeServerStore(base, members) {
     members: () => pub,
     async login(id) { const d = await api('/api/login', 'POST', { id }); token = d.token; return { memberId: d.memberId, token }; },
     async logout() { try { await api('/api/logout', 'POST'); } catch (e) { } token = null; },
-    async loadState() { const d = await api('/api/state', 'GET'); return { state: sanitizeState(d.state, { local: false }), rev: d.rev }; },
+    async loadState() { const d = await api('/api/state', 'GET'); return { state: sanitizeState(d.state), rev: d.rev }; },
     async persist(s) { const d = await api('/api/state', 'PUT', { state: s }); return { rev: d.rev }; },
     async renameMember(id, name) {
       const d = await api('/api/member', 'POST', { id, name });
@@ -1066,7 +1059,7 @@ function renderData() {
     '<li>标有 <span class="badge ok">已核实</span> 的资源链接结合 B 站 / 社区攻略评价筛选；<span class="badge" style="color:var(--violet)">搜索直达</span> 类为站内搜索入口，请站内确认最新合集。</li>' +
     '<li>点击成员卡片即可<b>免密进入</b>，名称可在登录页铅笔按钮或「数据 → 编辑名称」自定义（如「我 / 队员一」）；演示打卡历史为自动生成，可在上方一键重置。</li>' +
     (store.mode === 'server'
-      ? '<li><b>局域网同步模式</b>：一人运行 <code>node server.js</code>，队友浏览器访问 <code>http://&lt;本机IP&gt;:8787</code>，三人共享同一份团队数据，打卡 / 课时 / 名称实时互相可见。导出备份与分享码均不含服务端凭据。</li>'
+      ? '<li><b>局域网同步模式</b>：一人运行 <code>node server.js</code>，队友浏览器访问 <code>http://&lt;本机IP&gt;:8787</code>，三人共享同一份团队数据，打卡 / 课时 / 名称实时互相可见。导出备份与分享码只含团队学习数据。</li>'
       : '<li><b>本机演示模式</b>：双击 index.html 即可运行，数据仅存于当前浏览器。三人可在此切换身份体验；要真正多机同步，运行 <code>node server.js</code> 用局域网访问，<b>无局域网时用上方「分享码合并」</b>把进度发给队友汇总。</li>') +
     '</ul>';
   renderConnection();
@@ -1499,7 +1492,6 @@ function saveResource(id) {
 /* ── 导出 / 导入 / 重置 ── */
 function exportJSON() {
   const out = JSON.parse(JSON.stringify(S));
-  out.members = out.members.map(m => { const c = Object.assign({}, m); delete c.passHash; return c; });
   delete out._rev;
   const blob = new Blob([JSON.stringify(out, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
@@ -1519,10 +1511,7 @@ function handleImportFile(file) {
       title: '导入团队备份', sub: '将覆盖当前全部团队数据', okLabel: '覆盖导入',
       text: '备份包含 <b style="color:var(--copper-bright)">' + data.modules.length + '</b> 个模块、<b style="color:var(--copper-bright)">' + data.resources.length + '</b> 条资料、<b style="color:var(--copper-bright)">' + data.checkins.length + '</b> 条打卡记录。导入后当前数据将被替换，建议先导出备份。',
       onOk: () => {
-        const oldById = new Map(S.members.map(m => [m.id, m]));
-        const ns = sanitizeState(data, { local: store.mode === 'local' });
-        if (store.mode === 'local') ns.members.forEach(m => { const o = oldById.get(m.id); if (o && SAFE_HASH.test(o.passHash)) m.passHash = o.passHash; });
-        S = ns; persist(); closeDrawer(); ui.selModule = null; renderAll(); toast('导入成功，团队数据已恢复', 'ok');
+        S = sanitizeState(data); persist(); closeDrawer(); ui.selModule = null; renderAll(); toast('导入成功，团队数据已恢复', 'ok');
       }
     });
   };
@@ -1533,16 +1522,16 @@ function resetAll() {
     title: '重置为演示数据', sub: '清空所有修改与打卡记录', danger: true, okLabel: '确认重置',
     text: '将恢复 ' + SEED.routeOrder.length + ' 个主线模块（含课时与练手项目里程碑，按学习路线排序）、' + SEED.resources.length + ' 条核实资料、' + SEED.hardware.length + ' 项硬件装备与自动生成的演示打卡历史，并按默认分工指派负责人；模块库另有 ' + SEED.catalog.length + ' 个基础 / 可选模板可随时加入。<b>你添加的模块、课时、资料与真实打卡都会丢失</b>，建议先导出备份。',
     onOk: () => {
-      S = sanitizeState(SEED.buildState(), { local: store.mode === 'local' });
+      S = sanitizeState(SEED.buildState());
       persist(); closeDrawer(); ui.selModule = null; renderAll(); toast('已重置为演示数据', 'ok');
     }
   });
 }
 
 /* ═══════════ 分享码合并同步（局域网不可用时的离线路径） ═══════════
-   生成：团队状态 → 剥离密码 → JSON → gzip（可用时）→ base64，前缀 SBX1./SB1.
+   生成：团队状态 → 剥离 _rev → JSON → gzip（可用时）→ base64，前缀 SBX1./SB1.
    合并：按 id 取并集；打卡 / 硬件按 ts 取新；课时 / 里程碑完成态按 ts 取新（同刻取已完成）；
-        模块 / 资料标量保留本地，新增项追加；成员身份与密码永不导入。 */
+        模块 / 资料标量保留本地，新增项追加；已有成员只更新 stageId / focus。 */
 function bytesToB64(bytes) {
   let bin = ''; const chunk = 0x8000;
   for (let i = 0; i < bytes.length; i += chunk) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
@@ -1565,7 +1554,6 @@ async function gunzipBytes(bytes) {
 }
 async function encodeShare(state) {
   const payload = JSON.parse(JSON.stringify(state));
-  payload.members = (payload.members || []).map(m => { const c = Object.assign({}, m); delete c.passHash; return c; });
   delete payload._rev;
   const bytes = new TextEncoder().encode(JSON.stringify(payload));
   const gz = await gzipBytes(bytes);
@@ -1606,7 +1594,7 @@ function mergeStates(local, incoming) {
   (incoming.members || []).forEach(im => {
     if (!im || !im.id) return;
     if (localMembers.has(im.id)) { const lm = localMembers.get(im.id); if (im.stageId) lm.stageId = im.stageId; if (im.focus) lm.focus = im.focus; }
-    else { const c = Object.assign({}, im); delete c.passHash; out.members.push(c); localMembers.set(im.id, c); }
+    else { const c = Object.assign({}, im); out.members.push(c); localMembers.set(im.id, c); }
   });
   out.stages = mergeById(out.stages, incoming.stages, a => a);
   out.modules = mergeById(out.modules, incoming.modules, mergeModule);
@@ -1638,7 +1626,7 @@ async function genShare() {
     const code = await encodeShare(S);
     const out = $('#shareOut'); if (out) out.value = code;
     const meta = $('#shareOutMeta');
-    if (meta) meta.innerHTML = icon('check') + '<span>已生成 · ' + code.length + ' 字符 · 含 ' + S.checkins.length + ' 条打卡 / ' + S.modules.length + ' 模块 / ' + (S.hardware || []).length + ' 装备（不含密码）</span>';
+    if (meta) meta.innerHTML = icon('check') + '<span>已生成 · ' + code.length + ' 字符 · 含 ' + S.checkins.length + ' 条打卡 / ' + S.modules.length + ' 模块 / ' + (S.hardware || []).length + ' 装备</span>';
     toast('分享码已生成，复制后发给队友', 'ok');
   } catch (e) { toast('生成失败：' + (e.message || '浏览器不支持压缩'), 'danger'); }
   finally { ui.shareBusy = false; if (btn) { btn.disabled = false; btn.innerHTML = icon('share') + '生成我的分享码'; } }
@@ -1659,20 +1647,17 @@ async function importShare() {
   let incoming;
   try { incoming = await decodeShare(code); }
   catch (e) { if (meta) meta.innerHTML = icon('alert') + '<span>' + esc(e.message || '分享码无效') + '</span>'; toast(e.message || '分享码无效', 'danger'); return; }
-  const inc = sanitizeState(JSON.parse(JSON.stringify(incoming)), { local: false });
+  const inc = sanitizeState(JSON.parse(JSON.stringify(incoming)));
   const merged = mergeStates(S, inc);
   const newCheckins = Math.max(0, merged.checkins.length - S.checkins.length);
   const newMods = Math.max(0, merged.modules.length - S.modules.length);
   const newHw = Math.max(0, (merged.hardware || []).length - (S.hardware || []).length);
   if (meta) meta.innerHTML = icon('check') + '<span>解析成功 · 队友 ' + inc.members.length + ' 人 / ' + inc.checkins.length + ' 打卡 / ' + inc.modules.length + ' 模块 / ' + (inc.hardware || []).length + ' 装备</span>';
   openConfirm({
-    title: '合并队友进度', sub: '按 id 汇总 · 不覆盖你的数据与密码', okLabel: '确认合并',
-    text: '将合并分享码中的团队数据：新增 <b style="color:var(--copper-bright)">' + newCheckins + '</b> 条打卡、<b style="color:var(--copper-bright)">' + newMods + '</b> 个模块、<b style="color:var(--copper-bright)">' + newHw + '</b> 项装备；课时与里程碑完成状态按最新时间汇总。你的本地密码与现有数据不会被覆盖。',
+    title: '合并队友进度', sub: '按 id 汇总 · 不覆盖你的数据', okLabel: '确认合并',
+    text: '将合并分享码中的团队数据：新增 <b style="color:var(--copper-bright)">' + newCheckins + '</b> 条打卡、<b style="color:var(--copper-bright)">' + newMods + '</b> 个模块、<b style="color:var(--copper-bright)">' + newHw + '</b> 项装备；课时与里程碑完成状态按最新时间汇总。你的现有数据不会被覆盖。',
     onOk: () => {
-      const oldById = new Map(S.members.map(m => [m.id, m]));
-      const ns = sanitizeState(merged, { local: store.mode === 'local' });
-      if (store.mode === 'local') ns.members.forEach(m => { const o = oldById.get(m.id); if (o && SAFE_HASH.test(o.passHash)) m.passHash = o.passHash; });
-      S = ns; persist(); if (inp) inp.value = ''; if (meta) meta.innerHTML = '';
+      S = sanitizeState(merged); persist(); if (inp) inp.value = ''; if (meta) meta.innerHTML = '';
       closeDrawer(); ui.selModule = null; renderAll();
       toast('合并成功 · 团队进度已汇总（+' + newCheckins + ' 条打卡）', 'ok');
     }
