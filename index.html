@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>学习工作台 · Study Bench</title>
+<meta name="description" content="竞赛学习打卡与进度管理：每日签到、学习模块推进、已核实教程资料库。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='6' y='6' width='20' height='20' rx='3' fill='%2314532d' stroke='%2335c46f' stroke-width='2'/%3E%3Crect x='12' y='12' width='8' height='8' fill='%23f0b429'/%3E%3Cpath d='M10 6V2M16 6V2M22 6V2M10 30v-4M16 30v-4M22 30v-4M6 10H2M6 16H2M6 22H2M30 10h-4M30 16h-4M30 22h-4' stroke='%23d98e32' stroke-width='2'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="styles.css">
+<script>(function(){try{var t=localStorage.getItem('studybench.theme');if(t!=='workbench'&&t!=='claude-light'&&t!=='claude-dark')t='workbench';document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','workbench');}})();</script>
+</head>
+<body>
+
+<div class="bg-layers" aria-hidden="true">
+  <div class="bg-traces"></div>
+  <div class="bg-glow g1"></div>
+  <div class="bg-glow g2"></div>
+  <div class="bg-grain"></div>
+</div>
+
+<header class="topbar">
+  <div class="brand">
+    <svg class="brand-chip" viewBox="0 0 32 32" aria-hidden="true">
+      <rect x="6" y="6" width="20" height="20" rx="3" style="fill:var(--pad-b);stroke:var(--mask-bright)" stroke-width="1.6"/>
+      <rect x="12" y="12" width="8" height="8" rx="1" style="fill:var(--copper-bright)"/>
+      <path d="M10 6V2M16 6V2M22 6V2M10 30v-4M16 30v-4M22 30v-4M6 10H2M6 16H2M6 22H2M30 10h-4M30 16h-4M30 22h-4" style="stroke:var(--copper)" stroke-width="1.8"/>
+      <circle cx="9.5" cy="9.5" r="1.2" style="fill:var(--pad)"/>
+    </svg>
+    <div>
+      <h1>学习工作台</h1>
+      <span class="brand-sub">Study Bench · Rev 1.0</span>
+    </div>
+  </div>
+  <nav class="tabs" id="nav" aria-label="主导航"></nav>
+  <div class="top-right">
+    <div class="theme-switch">
+      <button class="theme-btn" id="themeBtn" type="button" data-action="theme-menu" aria-haspopup="true" aria-expanded="false" title="主题外观" aria-label="选择主题外观"></button>
+      <div class="theme-menu" id="themeMenu" role="menu" aria-label="主题外观"></div>
+    </div>
+    <div class="sync-indicator" id="syncIndicator" style="display:none" title="团队数据同步状态"></div>
+    <div class="today-chip" id="todayChip"></div>
+    <div class="streak-chip" id="streakChip" title="连续打卡天数"></div>
+    <div class="member-switch">
+      <button class="member-chip" id="memberChip" type="button" data-action="member-menu" aria-haspopup="true" title="当前身份 · 点击切换"></button>
+      <div class="member-menu" id="memberMenu" role="menu"></div>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ═══ 视图 1 · 今日打卡 ═══ -->
+  <section class="view" id="view-checkin" aria-label="今日打卡">
+    <div class="view-head">
+      <div>
+        <h2>今日打卡 <span class="silk">Daily Check-in</span></h2>
+        <p>每天记录学习模块与时长，热力图见证你的连续投入。</p>
+      </div>
+    </div>
+    <div class="checkin-top">
+      <div class="card pad-card">
+        <div class="pad-wrap" id="padWrap">
+          <div class="pad-ring"></div>
+          <div class="pad-ring r2"></div>
+          <button class="pad-btn" id="padBtn" type="button"></button>
+        </div>
+        <div class="pad-status" id="padStatus"></div>
+      </div>
+      <div class="stat-grid" id="statGrid"></div>
+    </div>
+
+    <div class="card checkin-form">
+      <div class="card-title" id="formTitle"></div>
+      <div class="form-grid">
+        <div>
+          <label class="fld"><span>学习模块</span></label>
+          <div class="mod-chips" id="modChips" role="radiogroup" aria-label="选择学习模块"></div>
+        </div>
+        <div>
+          <label class="fld"><span>学习时长</span></label>
+          <div class="minutes-row">
+            <div class="stepper">
+              <button class="btn icon" type="button" data-action="min-dec" aria-label="减少 15 分钟"></button>
+              <button class="btn icon" type="button" data-action="min-inc" aria-label="增加 15 分钟"></button>
+            </div>
+            <input type="range" id="minRange" min="15" max="240" step="15" value="60" aria-label="学习时长（分钟）">
+            <div class="minutes-val" id="minVal">60<small> min</small></div>
+          </div>
+        </div>
+        <div class="form-actions">
+          <input type="text" class="note" id="noteInput" maxlength="80" placeholder="今天学了什么？（可选，80 字以内）">
+          <button class="btn primary" type="button" data-action="submit-checkin" id="submitBtn"></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="checkin-bottom">
+      <div class="card">
+        <div class="card-title" id="hmTitle"></div>
+        <div class="heatmap-scroll"><div class="heatmap" id="heatmap"></div></div>
+        <div class="hm-legend">
+          <span>少</span>
+          <span class="hm-cell"></span><span class="hm-cell l1"></span><span class="hm-cell l2"></span><span class="hm-cell l3"></span><span class="hm-cell l4"></span>
+          <span>多</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title" id="weekTitle"></div>
+        <div class="week-bars" id="weekBars"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" id="logTitle"></div>
+      <div class="log-list" id="logList"></div>
+    </div>
+  </section>
+
+  <!-- ═══ 视图 2 · 学习进度 ═══ -->
+  <section class="view" id="view-progress" aria-label="学习进度">
+    <div class="view-head">
+      <div>
+        <h2>学习进度 <span class="silk">Progress Board</span></h2>
+        <p>阶段路线图看清当前该学什么，每个模块逐节课时 + 练手项目里程碑，点圆点即可推进。</p>
+      </div>
+    </div>
+    <div class="card roadmap-card" id="roadmap"></div>
+    <div class="card focus-card" id="focusCard"></div>
+    <div class="card progress-summary" id="progressSummary"></div>
+    <div class="module-toolbar">
+      <div class="filter-chips prog-filter" id="progFilterChips"></div>
+      <span class="badge info" id="modCountBadge"></span>
+      <span class="sp"></span>
+      <button class="btn ghost" type="button" data-action="goto-catalog" id="gotoCatalogBtn"></button>
+      <button class="btn copper" type="button" data-action="add-module" id="addModuleBtn"></button>
+    </div>
+    <div class="filter-chips prog-stage-chips" id="progStageChips"></div>
+    <div class="module-grid" id="moduleGrid"></div>
+  </section>
+
+  <!-- ═══ 视图 · 模块库 ═══ -->
+  <section class="view" id="view-catalog" aria-label="模块库">
+    <div class="view-head">
+      <div>
+        <h2>模块库 <span class="silk">Module Catalog</span></h2>
+        <p>三人从基础 → 单项技能 → 实战练手 → 竞赛冲刺的完整学习路线：先学什么技能、配套做什么项目，按顺序排好。想加新内容，直接「加入计划」。</p>
+      </div>
+    </div>
+    <div class="lib-toolbar">
+      <div class="search-wrap" id="catSearchWrap">
+        <input type="search" id="catSearch" placeholder="搜索模块 / 目标 / 课时 / UP 主…" aria-label="搜索模块库">
+      </div>
+      <select id="catDir" aria-label="按方向筛选"></select>
+      <select id="catPhase" aria-label="按阶段筛选"></select>
+      <select id="catSort" aria-label="排序方式">
+        <option value="default">路线顺序</option>
+        <option value="name">按名称</option>
+        <option value="lessons">按课时数</option>
+      </select>
+    </div>
+    <div class="filter-chips" id="catStatusChips"></div>
+    <div class="res-count" id="catCount"></div>
+    <div class="res-grid" id="catGrid"></div>
+  </section>
+
+  <!-- ═══ 视图 · 硬件装备板 ═══ -->
+  <section class="view" id="view-hardware" aria-label="硬件装备">
+    <div class="view-head">
+      <div>
+        <h2>硬件装备 <span class="silk">Hardware BOM</span></h2>
+        <p>已有装备 + 主流分工待购清单：STM32 / 龙芯 / MaixCam2 / TI 官方 MSPM0 已入手，缺的按分工再买。</p>
+      </div>
+    </div>
+    <div class="hw-stats" id="hwStats"></div>
+    <div class="card hw-board">
+      <div class="card-title" id="hwTitle"></div>
+      <div class="hw-toolbar">
+        <div class="filter-chips" id="hwStatusChips"></div>
+        <span class="sp"></span>
+        <button class="btn copper" type="button" data-action="add-hardware" id="addHwBtn"></button>
+      </div>
+      <div class="filter-chips hw-owner-chips" id="hwOwnerChips"></div>
+      <div class="res-count" id="hwCount"></div>
+      <div class="hw-grid" id="hardwareGrid"></div>
+    </div>
+  </section>
+
+  <!-- ═══ 视图 · 团队监督 ═══ -->
+  <section class="view" id="view-team" aria-label="团队监督">
+    <div class="view-head">
+      <div>
+        <h2>团队监督 <span class="silk">Team Sync</span></h2>
+        <p>三人主流分工一览：各自负责的模块、课时与里程碑进度、打卡投入与下一步，相互督促。</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title" id="teamMembersTitle"></div>
+      <div class="team-members" id="teamMembers"></div>
+    </div>
+    <div class="team-lower">
+      <div class="card">
+        <div class="card-title" id="teamCompareTitle"></div>
+        <div class="cmp-group">
+          <div class="cmp-sub">累计投入时长</div>
+          <div class="cmp-rows" id="teamCompareTime"></div>
+          <div class="cmp-sub">课时 + 里程碑完成度</div>
+          <div class="cmp-rows" id="teamCompareTask"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title" id="teamFeedTitle"></div>
+        <div class="team-feed" id="teamFeed"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 视图 3 · 学习资料库 ═══ -->
+  <section class="view" id="view-library" aria-label="学习资料库">
+    <div class="view-head">
+      <div>
+        <h2>学习资料库 <span class="silk">Verified Resources</span></h2>
+        <p>教程链接结合社区攻略与口碑评价核实，每个模块都有对口资源。</p>
+      </div>
+    </div>
+    <div class="lib-toolbar">
+      <div class="search-wrap" id="searchWrap">
+        <input type="search" id="libSearch" placeholder="搜索标题 / UP 主 / 标签 / 推荐理由…" aria-label="搜索资料">
+      </div>
+      <select id="libType" aria-label="按类型筛选"></select>
+      <select id="libSort" aria-label="排序方式">
+        <option value="default">推荐排序</option>
+        <option value="title">按标题</option>
+        <option value="module">按模块</option>
+        <option value="fav">收藏优先</option>
+      </select>
+      <button class="btn copper" type="button" data-action="add-resource" id="addResBtn"></button>
+    </div>
+    <div class="filter-chips" id="modFilterChips"></div>
+    <div class="res-count" id="resCount"></div>
+    <div class="res-grid" id="resGrid"></div>
+  </section>
+
+  <!-- ═══ 视图 4 · 数据 ═══ -->
+  <section class="view" id="view-data" aria-label="数据管理">
+    <div class="view-head">
+      <div>
+        <h2>数据 <span class="silk">Data & Sync</span></h2>
+        <p>局域网实时同步，或用分享码离线合并进度；数据可导出备份 / 导入恢复。</p>
+      </div>
+    </div>
+    <div class="data-stats" id="dataStats"></div>
+    <div class="card conn-card">
+      <div class="card-title" id="connTitle"></div>
+      <div class="conn-panel" id="connPanel">
+        <div class="conn-head">
+          <span class="conn-badge" id="connModeBadge"></span>
+          <div class="conn-lan" id="connLanStatus"></div>
+        </div>
+        <div class="conn-cols">
+          <div class="conn-col lan-col">
+            <h5><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg>局域网同步 · 最快</h5>
+            <p>一人在文件夹运行 <code>node server.js</code>，队友浏览器访问 <code>http://&lt;本机IP&gt;:8787</code>，三人共享一份数据，打卡 / 课时每 4 秒实时同步。</p>
+            <ul class="conn-tips">
+              <li>需三台设备在同一 Wi-Fi / 局域网</li>
+              <li>点击成员免密进入，名称实时同步；分享码与备份不含服务端凭据</li>
+              <li>启动后命令行会打印局域网访问地址</li>
+            </ul>
+          </div>
+          <div class="conn-col share-col">
+            <h5><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg>分享码合并 · 无局域网时</h5>
+            <p class="conn-share-desc" id="connShareDesc"></p>
+            <div class="share-block">
+              <div class="share-row">
+                <button class="btn copper sm" type="button" data-action="gen-share"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg>生成我的分享码</button>
+                <button class="btn sm" type="button" data-action="copy-share"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>复制</button>
+              </div>
+              <textarea id="shareOut" class="share-code" readonly rows="3" placeholder="点「生成我的分享码」，把团队进度压成一段文本（不含凭据）…" aria-label="我的分享码"></textarea>
+              <div class="share-meta" id="shareOutMeta"></div>
+            </div>
+            <div class="share-block">
+              <textarea id="shareIn" class="share-code" rows="3" placeholder="粘贴队友发来的分享码（SBX1.… 或 SB1.…）" aria-label="队友的分享码"></textarea>
+              <div class="share-row">
+                <button class="btn primary sm" type="button" data-action="import-share"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3v12a6 6 0 0 0 6 6h6"/><path d="m15 18 3 3-3 3M6 3 3 6l3 3M18 3a6 6 0 0 1-6 6H6"/></svg>合并队友进度</button>
+                <span class="share-hint">按 id 汇总双方打卡与课时，不覆盖</span>
+              </div>
+              <div class="share-meta" id="shareInMeta"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="data-grid">
+      <div class="card">
+        <div class="card-title" id="mbTitle"></div>
+        <div class="mod-bars" id="modBars"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:18px">
+        <div class="card">
+          <div class="card-title" id="accountTitle"></div>
+          <div class="account-box" id="accountBox"></div>
+        </div>
+        <div class="card">
+          <div class="card-title" id="themeTitle"></div>
+          <div class="theme-grid" id="themeGrid"></div>
+          <div class="theme-note" id="themeNote"></div>
+        </div>
+        <div class="card">
+          <div class="card-title" id="backupTitle"></div>
+          <div class="data-actions">
+            <button class="btn" type="button" data-action="export" id="exportBtn"></button>
+            <button class="btn" type="button" data-action="import" id="importBtn"></button>
+            <button class="btn danger" type="button" data-action="reset" id="resetBtn"></button>
+          </div>
+          <div style="margin-top:14px;font-size:11px;color:var(--fg3)">
+            <span id="storageInfo"></span>
+            <div class="storage-meter"><i id="storageBar" style="width:2%"></i></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title" id="aboutTitle"></div>
+          <div class="about-note" id="aboutNote"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div class="drawer-scrim" id="drawerScrim"></div>
+<aside class="drawer" id="drawer" aria-label="模块详情" role="dialog"></aside>
+
+<div class="modal-scrim" id="modalScrim">
+  <div class="modal" id="modal" role="dialog" aria-modal="true"></div>
+</div>
+
+<div class="toast-wrap" id="toastWrap" aria-live="polite"></div>
+<input type="file" id="importFile" accept=".json,application/json" hidden>
+
+<!-- ═══ 登录门 ═══ -->
+<div class="login-overlay" id="loginOverlay" role="dialog" aria-modal="true" aria-label="团队登录">
+  <div class="login-card">
+    <div class="login-brand">
+      <svg class="brand-chip" viewBox="0 0 32 32" aria-hidden="true">
+        <rect x="6" y="6" width="20" height="20" rx="3" style="fill:var(--pad-b);stroke:var(--mask-bright)" stroke-width="1.6"/>
+        <rect x="12" y="12" width="8" height="8" rx="1" style="fill:var(--copper-bright)"/>
+        <path d="M10 6V2M16 6V2M22 6V2M10 30v-4M16 30v-4M22 30v-4M6 10H2M6 16H2M6 22H2M30 10h-4M30 16h-4M30 22h-4" style="stroke:var(--copper)" stroke-width="1.8"/>
+        <circle cx="9.5" cy="9.5" r="1.2" style="fill:var(--pad)"/>
+      </svg>
+      <div>
+        <h1>学习工作台</h1>
+        <span class="brand-sub">Study Bench · 团队版</span>
+      </div>
+    </div>
+    <div class="login-mode" id="loginMode"></div>
+    <div class="login-label">点击成员直接进入 · 无需密码</div>
+    <div class="login-members" id="loginMembers" role="group" aria-label="团队成员 · 点击进入"></div>
+    <div class="login-error" id="loginError" role="alert"></div>
+    <div class="login-hint" id="loginHint"></div>
+  </div>
+</div>
+
+<script src="seed.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
