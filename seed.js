@@ -15,7 +15,7 @@
     { id: 'me', name: '我', role: '视觉算法 · 控制主线 · 龙芯', color: '#35c46f', stageId: 's1',
       focus: 'OpenCV / MaixCam2 视觉 + 整车控制策略 + 龙芯 Linux 上位机，队长统筹框架与联调' },
     { id: 'a', name: '队友 A', role: '硬件 PCB · 电源驱动 · 机械', color: '#f0a13c', stageId: 's1',
-      focus: '原理图 / 嘉立创 EDA 打样 + 电机驱动 / 电源管理 + 车模机械装配（平衡车底板已画完）' },
+      focus: '原理图 / 嘉立创 EDA 打样 + 电机驱动 / 电源管理 + 车模机械装配' },
     { id: 'b', name: '队友 B', role: '嵌入式控制 · PID · 电赛', color: '#4da3ff', stageId: 's1',
       focus: 'STM32 / MSPM0 固件 + PID 调参 + 编码器 / IMU + 电赛控制题真题' }
   ];
@@ -110,7 +110,7 @@
     {
       id: 'm-hw', name: '硬件 PCB · 电源驱动', color: '#ff7a45', ownerId: 'a', stageId: 's1',
       priority: 'P0 · 硬件',
-      goal: '嘉立创 EDA 画板 → 打样焊接 → 电机驱动 / 电源管理 / 车模机械，为整车提供可靠硬件平台（平衡车底板已画完）。',
+      goal: '嘉立创 EDA 画板 → 打样焊接 → 电机驱动 / 电源管理 / 车模机械，为整车提供可靠硬件平台。',
       lessons: [
         { id: 'l-hw-1', title: '杜洋 PCB 速成 + 嘉立创 EDA 上手', dur: '', url: 'https://www.bilibili.com/video/BV1yf4y1Q7Qb', author: '杜洋', done: false, ts: 0 },
         { id: 'l-hw-2', title: '原理图：电源 / 驱动 / 主控最小系统', dur: '', url: 'https://www.bilibili.com/video/BV1Uo61BGEUv', author: '嘉立创EDA', done: false, ts: 0 },
@@ -122,7 +122,7 @@
         { id: 'l-hw-8', title: '唐老师讲电赛：硬件方法论 + 报告', dur: '', url: 'https://space.bilibili.com/28143041', author: '唐老师讲电赛', done: false, ts: 0 }
       ],
       projects: [
-        { id: 'p-hw-1', name: '平衡车底板（已画完）', desc: '队友 A 已完成的主控底板', url: 'https://www.bilibili.com/video/BV1Uo61BGEUv', milestones: [
+        { id: 'p-hw-1', name: '平衡车底板', desc: '两层主控底板：原理图 → 布线 → 打样 → 焊接上电', url: 'https://www.bilibili.com/video/BV1Uo61BGEUv', milestones: [
           { id: 'ms-hw-1', title: '原理图', done: false, ts: 0 },
           { id: 'ms-hw-2', title: 'PCB 布线', done: false, ts: 0 },
           { id: 'ms-hw-3', title: '嘉立创打样', done: false, ts: 0 },
@@ -675,13 +675,13 @@
       ],
       projects: [P('p-c-pid-1', '单环 PID 仿真', '位置 / 速度单环闭环调参', 'https://www.bilibili.com/video/BV1G9zdYQEr3', [MS('ms-c-pid-1', '离散 PID 代码', true), MS('ms-c-pid-2', '单环闭环调参', true)])] },
     { id: 'cat-c-pcb', name: 'PCB 入门 · 嘉立创 EDA', color: '#ff7a45', dir: 'hardware', phase: 'foundation', suggestOwner: 'a', mastered: true,
-      goal: '已掌握：杜洋 PCB 速成 + 嘉立创 EDA 原理图 / 布线 / 打样 / 焊接（平衡车底板已画完）。加入即预完成，四层进阶见阶段 1。',
+      goal: '已掌握：杜洋 PCB 速成 + 嘉立创 EDA 原理图 / 布线 / 打样 / 焊接。加入即预完成，四层进阶见阶段 1。',
       lessons: [
         L('l-c-pcb-1', '杜洋 PCB 速成 + 嘉立创 EDA 上手', 'https://www.bilibili.com/video/BV1yf4y1Q7Qb', '杜洋', true),
         L('l-c-pcb-2', '原理图：电源 / 驱动 / 最小系统', 'https://www.bilibili.com/video/BV1Uo61BGEUv', '嘉立创EDA', true),
         L('l-c-pcb-3', 'PCB 布局布线 + DRC + 打样焊接', 'https://www.bilibili.com/video/BV1Uo61BGEUv', '嘉立创EDA', true)
       ],
-      projects: [P('p-c-pcb-1', '平衡车底板（已画完）', '两层主控底板原理图 → 打样 → 焊接', 'https://www.bilibili.com/video/BV1Uo61BGEUv', [MS('ms-c-pcb-1', '原理图 + 布线', true), MS('ms-c-pcb-2', '打样 + 焊接上电', true)])] },
+      projects: [P('p-c-pcb-1', '平衡车底板', '两层主控底板原理图 → 打样 → 焊接', 'https://www.bilibili.com/video/BV1Uo61BGEUv', [MS('ms-c-pcb-1', '原理图 + 布线', true), MS('ms-c-pcb-2', '打样 + 焊接上电', true)])] },
 
     /* 视觉方向（me）：巡线 → MaixPy → 元素 → 龙芯 → 训练 → 整合跑车 → 边缘AI → 走马观碑 → 控制策略 → 参赛 → 真题 */
     { id: 'cat-v-maixpy', name: 'MaixPy · MaixCam2 上手', color: '#38bdf8', dir: 'vision', phase: 'learn', suggestOwner: 'me',
@@ -842,7 +842,7 @@
       ],
       projects: [P('p-h-dr-1', '驱动选型报告', '对比方案 → 选型 → 匹配验证', 'https://m.bilibili.com/video/BV1X7E36NENG/', [MS('ms-h-dr-1', '方案对比'), MS('ms-h-dr-2', '选型报告'), MS('ms-h-dr-3', '匹配验证')])] },
     { id: 'cat-h-base4', name: '平衡车底板改四层打样', color: '#ff7a45', dir: 'hardware', phase: 'project', suggestOwner: 'a',
-      goal: '整合：把已画完的两层底板改四层，嘉立创打样 + 焊接 + 上电测试。练手：一块抗干扰更强的平衡车底板，接控制组联调。',
+      goal: '整合：把两层底板改四层，嘉立创打样 + 焊接 + 上电测试。练手：一块抗干扰更强的平衡车底板，接控制组联调。',
       lessons: [
         L('l-h-b4-1', '底板四层改版布局', 'https://www.bilibili.com/video/BV1Uo61BGEUv', '嘉立创EDA'),
         L('l-h-b4-2', '电源 / 地平面优化', 'https://space.bilibili.com/43584648', '工科男孙老师'),
