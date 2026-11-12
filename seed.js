@@ -77,25 +77,25 @@
       priority: 'P0 · 基础',
       goal: '江协 F103 标准库 50 集打底（点灯→外设），再迁野火 HAL + CubeMX 上 F407，三人共同的固件基本功。',
       lessons: [
-        { id: 'l-stm-1', title: 'P1–P3 课程简介 + Keil / CubeMX 安装', dur: '', url: 'https://www.bilibili.com/video/BV1th411z7sn?p=1', author: '江协科技', done: true, ts: 0 },
-        { id: 'l-stm-2', title: 'P4 新建工程 + 库函数 vs 寄存器', dur: '', url: 'https://www.bilibili.com/video/BV1th411z7sn?p=4', author: '江协科技', done: true, ts: 0 },
-        { id: 'l-stm-3', title: 'P5–P8 GPIO：LED / 按键 / 蜂鸣器', dur: '', url: 'https://www.bilibili.com/video/BV1th411z7sn?p=5', author: '江协科技', done: true, ts: 0 },
-        { id: 'l-stm-4', title: 'P9–P10 OLED 显示驱动', dur: '', url: 'https://www.bilibili.com/video/BV1th411z7sn?p=9', author: '江协科技', done: true, ts: 0 },
-        { id: 'l-stm-5', title: 'P11–P12 EXTI 中断 + 旋转编码器', dur: '', url: 'https://www.bilibili.com/video/BV1th411z7sn?p=11', author: '江协科技', done: true, ts: 0 },
-        { id: 'l-stm-6', title: 'P13–P20 定时器：中断 / PWM / 输入捕获 / 编码器', dur: '', url: 'https://www.bilibili.com/video/BV1th411z7sn?p=13', author: '江协科技', done: true, ts: 0 },
-        { id: 'l-stm-7', title: 'P21–P22 ADC 模数转换', dur: '', url: 'https://www.bilibili.com/video/BV1th411z7sn?p=21', author: '江协科技', done: true, ts: 0 },
-        { id: 'l-stm-8', title: 'P23+ DMA / USART 串口通信', dur: '', url: 'https://www.bilibili.com/video/BV1th411z7sn?p=23', author: '江协科技', done: true, ts: 0 },
+        { id: 'l-stm-1', title: 'P1–P3 课程简介 + Keil / CubeMX 安装', dur: '', url: 'https://www.bilibili.com/video/BV1th411z7sn?p=1', author: '江协科技', done: false, ts: 0 },
+        { id: 'l-stm-2', title: 'P4 新建工程 + 库函数 vs 寄存器', dur: '', url: 'https://www.bilibili.com/video/BV1th411z7sn?p=4', author: '江协科技', done: false, ts: 0 },
+        { id: 'l-stm-3', title: 'P5–P8 GPIO：LED / 按键 / 蜂鸣器', dur: '', url: 'https://www.bilibili.com/video/BV1th411z7sn?p=5', author: '江协科技', done: false, ts: 0 },
+        { id: 'l-stm-4', title: 'P9–P10 OLED 显示驱动', dur: '', url: 'https://www.bilibili.com/video/BV1th411z7sn?p=9', author: '江协科技', done: false, ts: 0 },
+        { id: 'l-stm-5', title: 'P11–P12 EXTI 中断 + 旋转编码器', dur: '', url: 'https://www.bilibili.com/video/BV1th411z7sn?p=11', author: '江协科技', done: false, ts: 0 },
+        { id: 'l-stm-6', title: 'P13–P20 定时器：中断 / PWM / 输入捕获 / 编码器', dur: '', url: 'https://www.bilibili.com/video/BV1th411z7sn?p=13', author: '江协科技', done: false, ts: 0 },
+        { id: 'l-stm-7', title: 'P21–P22 ADC 模数转换', dur: '', url: 'https://www.bilibili.com/video/BV1th411z7sn?p=21', author: '江协科技', done: false, ts: 0 },
+        { id: 'l-stm-8', title: 'P23+ DMA / USART 串口通信', dur: '', url: 'https://www.bilibili.com/video/BV1th411z7sn?p=23', author: '江协科技', done: false, ts: 0 },
         { id: 'l-stm-9', title: 'I2C / SPI 外设（软件模拟 + 硬件）', dur: '', url: 'https://www.bilibili.com/video/BV1th411z7sn', author: '江协科技', done: false, ts: 0 },
         { id: 'l-stm-10', title: '野火 HAL 库 + CubeMX 上手', dur: '', url: 'https://www.bilibili.com/video/BV18X4y1M763', author: '野火', done: false, ts: 0 },
         { id: 'l-stm-11', title: 'F407 探索者 HAL：GPIO / 定时器 / 串口', dur: '', url: 'http://www.openedv.com/docs/boards/stm32/zdyz_stm32f407_explorerV3.html', author: '正点原子', done: false, ts: 0 }
       ],
       projects: [
         { id: 'p-stm-1', name: 'STM32 外设全家桶', desc: 'F103 标准库逐个外设点通', url: 'https://www.bilibili.com/video/BV1th411z7sn', milestones: [
-          { id: 'ms-stm-1', title: '点灯 + 按键', done: true, ts: 0 },
-          { id: 'ms-stm-2', title: 'OLED 显示', done: true, ts: 0 },
-          { id: 'ms-stm-3', title: 'PWM 呼吸灯', done: true, ts: 0 },
-          { id: 'ms-stm-4', title: '编码器测速', done: true, ts: 0 },
-          { id: 'ms-stm-5', title: '串口收发', done: true, ts: 0 },
+          { id: 'ms-stm-1', title: '点灯 + 按键', done: false, ts: 0 },
+          { id: 'ms-stm-2', title: 'OLED 显示', done: false, ts: 0 },
+          { id: 'ms-stm-3', title: 'PWM 呼吸灯', done: false, ts: 0 },
+          { id: 'ms-stm-4', title: '编码器测速', done: false, ts: 0 },
+          { id: 'ms-stm-5', title: '串口收发', done: false, ts: 0 },
           { id: 'ms-stm-6', title: 'ADC 采集', done: false, ts: 0 },
           { id: 'ms-stm-7', title: 'I2C / SPI 外设', done: false, ts: 0 }
         ] },
@@ -112,24 +112,24 @@
       priority: 'P0 · 硬件',
       goal: '嘉立创 EDA 画板 → 打样焊接 → 电机驱动 / 电源管理 / 车模机械，为整车提供可靠硬件平台（平衡车底板已画完）。',
       lessons: [
-        { id: 'l-hw-1', title: '杜洋 PCB 速成 + 嘉立创 EDA 上手', dur: '', url: 'https://www.bilibili.com/video/BV1yf4y1Q7Qb', author: '杜洋', done: true, ts: 0 },
-        { id: 'l-hw-2', title: '原理图：电源 / 驱动 / 主控最小系统', dur: '', url: 'https://www.bilibili.com/video/BV1Uo61BGEUv', author: '嘉立创EDA', done: true, ts: 0 },
-        { id: 'l-hw-3', title: 'PCB 布局布线 + DRC 检查', dur: '', url: 'https://www.bilibili.com/video/BV1Uo61BGEUv', author: '嘉立创EDA', done: true, ts: 0 },
-        { id: 'l-hw-4', title: '嘉立创打样 + 焊接调试', dur: '', url: 'https://www.bilibili.com/video/BV1Uo61BGEUv', author: '嘉立创EDA', done: true, ts: 0 },
-        { id: 'l-hw-5', title: '电机驱动 DRV8701 / BTN7971 选型', dur: '', url: 'https://m.bilibili.com/video/BV1X7E36NENG/', author: '学不会电磁场', done: true, ts: 0 },
+        { id: 'l-hw-1', title: '杜洋 PCB 速成 + 嘉立创 EDA 上手', dur: '', url: 'https://www.bilibili.com/video/BV1yf4y1Q7Qb', author: '杜洋', done: false, ts: 0 },
+        { id: 'l-hw-2', title: '原理图：电源 / 驱动 / 主控最小系统', dur: '', url: 'https://www.bilibili.com/video/BV1Uo61BGEUv', author: '嘉立创EDA', done: false, ts: 0 },
+        { id: 'l-hw-3', title: 'PCB 布局布线 + DRC 检查', dur: '', url: 'https://www.bilibili.com/video/BV1Uo61BGEUv', author: '嘉立创EDA', done: false, ts: 0 },
+        { id: 'l-hw-4', title: '嘉立创打样 + 焊接调试', dur: '', url: 'https://www.bilibili.com/video/BV1Uo61BGEUv', author: '嘉立创EDA', done: false, ts: 0 },
+        { id: 'l-hw-5', title: '电机驱动 DRV8701 / BTN7971 选型', dur: '', url: 'https://m.bilibili.com/video/BV1X7E36NENG/', author: '学不会电磁场', done: false, ts: 0 },
         { id: 'l-hw-6', title: '电源管理：锂电 + BUCK 多路稳压', dur: '', url: 'https://space.bilibili.com/43584648', author: '工科男孙老师', done: false, ts: 0 },
         { id: 'l-hw-7', title: '运放 / 电源 / 抗干扰细节', dur: '', url: 'https://space.bilibili.com/43584648', author: '工科男孙老师', done: false, ts: 0 },
         { id: 'l-hw-8', title: '唐老师讲电赛：硬件方法论 + 报告', dur: '', url: 'https://space.bilibili.com/28143041', author: '唐老师讲电赛', done: false, ts: 0 }
       ],
       projects: [
         { id: 'p-hw-1', name: '平衡车底板（已画完）', desc: '队友 A 已完成的主控底板', url: 'https://www.bilibili.com/video/BV1Uo61BGEUv', milestones: [
-          { id: 'ms-hw-1', title: '原理图', done: true, ts: 0 },
-          { id: 'ms-hw-2', title: 'PCB 布线', done: true, ts: 0 },
-          { id: 'ms-hw-3', title: '嘉立创打样', done: true, ts: 0 },
-          { id: 'ms-hw-4', title: '焊接 + 上电测试', done: true, ts: 0 }
+          { id: 'ms-hw-1', title: '原理图', done: false, ts: 0 },
+          { id: 'ms-hw-2', title: 'PCB 布线', done: false, ts: 0 },
+          { id: 'ms-hw-3', title: '嘉立创打样', done: false, ts: 0 },
+          { id: 'ms-hw-4', title: '焊接 + 上电测试', done: false, ts: 0 }
         ] },
         { id: 'p-hw-2', name: '整车硬件平台', desc: '驱动 / 电源 / 机械 / 线束', url: '', milestones: [
-          { id: 'ms-hw-5', title: '电机驱动板', done: true, ts: 0 },
+          { id: 'ms-hw-5', title: '电机驱动板', done: false, ts: 0 },
           { id: 'ms-hw-6', title: '电源管理板', done: false, ts: 0 },
           { id: 'ms-hw-7', title: '车模机械装配', done: false, ts: 0 },
           { id: 'ms-hw-8', title: '整车线束 + 抗干扰', done: false, ts: 0 }
@@ -141,15 +141,15 @@
       priority: 'P0 · 控制',
       goal: '江协 PID 12 集（约 8.3h）逐节跟练 → 倒立摆 → 平衡车：速度环、角度环、串级 PID 调参闭环。',
       lessons: [
-        { id: 'l-pid-1', title: 'P1 课程简介', dur: '', url: 'https://www.bilibili.com/video/BV1G9zdYQEr3?p=1', author: '江协科技', done: true, ts: 0 },
-        { id: 'l-pid-2', title: 'P2 PID 基本原理', dur: '', url: 'https://www.bilibili.com/video/BV1G9zdYQEr3?p=2', author: '江协科技', done: true, ts: 0 },
-        { id: 'l-pid-3', title: 'P3 离散 PID & 程序实现思路', dur: '', url: 'https://www.bilibili.com/video/BV1G9zdYQEr3?p=3', author: '江协科技', done: true, ts: 0 },
-        { id: 'l-pid-4', title: 'P4 基础驱动代码 & 编码电机 & SerialPlot', dur: '', url: 'https://www.bilibili.com/video/BV1G9zdYQEr3?p=4', author: '江协科技', done: true, ts: 0 },
-        { id: 'l-pid-5', title: 'P5 PID 闭环控制实验', dur: '', url: 'https://www.bilibili.com/video/BV1G9zdYQEr3?p=5', author: '江协科技', done: true, ts: 0 },
-        { id: 'l-pid-6', title: 'P6 积分限幅 · 积分分离 · 变速积分', dur: '', url: 'https://www.bilibili.com/video/BV1G9zdYQEr3?p=6', author: '江协科技', done: true, ts: 0 },
-        { id: 'l-pid-7', title: 'P7 微分先行 · 不完全微分', dur: '', url: 'https://www.bilibili.com/video/BV1G9zdYQEr3?p=7', author: '江协科技', done: true, ts: 0 },
-        { id: 'l-pid-8', title: 'P8 输出偏移 · 输入死区', dur: '', url: 'https://www.bilibili.com/video/BV1G9zdYQEr3?p=8', author: '江协科技', done: true, ts: 0 },
-        { id: 'l-pid-9', title: 'P9 双环 PID 原理 · 定速定位置', dur: '', url: 'https://www.bilibili.com/video/BV1G9zdYQEr3?p=9', author: '江协科技', done: true, ts: 0 },
+        { id: 'l-pid-1', title: 'P1 课程简介', dur: '', url: 'https://www.bilibili.com/video/BV1G9zdYQEr3?p=1', author: '江协科技', done: false, ts: 0 },
+        { id: 'l-pid-2', title: 'P2 PID 基本原理', dur: '', url: 'https://www.bilibili.com/video/BV1G9zdYQEr3?p=2', author: '江协科技', done: false, ts: 0 },
+        { id: 'l-pid-3', title: 'P3 离散 PID & 程序实现思路', dur: '', url: 'https://www.bilibili.com/video/BV1G9zdYQEr3?p=3', author: '江协科技', done: false, ts: 0 },
+        { id: 'l-pid-4', title: 'P4 基础驱动代码 & 编码电机 & SerialPlot', dur: '', url: 'https://www.bilibili.com/video/BV1G9zdYQEr3?p=4', author: '江协科技', done: false, ts: 0 },
+        { id: 'l-pid-5', title: 'P5 PID 闭环控制实验', dur: '', url: 'https://www.bilibili.com/video/BV1G9zdYQEr3?p=5', author: '江协科技', done: false, ts: 0 },
+        { id: 'l-pid-6', title: 'P6 积分限幅 · 积分分离 · 变速积分', dur: '', url: 'https://www.bilibili.com/video/BV1G9zdYQEr3?p=6', author: '江协科技', done: false, ts: 0 },
+        { id: 'l-pid-7', title: 'P7 微分先行 · 不完全微分', dur: '', url: 'https://www.bilibili.com/video/BV1G9zdYQEr3?p=7', author: '江协科技', done: false, ts: 0 },
+        { id: 'l-pid-8', title: 'P8 输出偏移 · 输入死区', dur: '', url: 'https://www.bilibili.com/video/BV1G9zdYQEr3?p=8', author: '江协科技', done: false, ts: 0 },
+        { id: 'l-pid-9', title: 'P9 双环 PID 原理 · 定速定位置', dur: '', url: 'https://www.bilibili.com/video/BV1G9zdYQEr3?p=9', author: '江协科技', done: false, ts: 0 },
         { id: 'l-pid-10', title: 'P10 倒立摆系统设计 · 驱动完善', dur: '', url: 'https://www.bilibili.com/video/BV1G9zdYQEr3?p=10', author: '江协科技', done: false, ts: 0 },
         { id: 'l-pid-11', title: 'P11 倒立摆程序实现', dur: '', url: 'https://www.bilibili.com/video/BV1G9zdYQEr3?p=11', author: '江协科技', done: false, ts: 0 },
         { id: 'l-pid-12', title: 'P12 倒立摆自动启摆', dur: '', url: 'https://www.bilibili.com/video/BV1G9zdYQEr3?p=12', author: '江协科技', done: false, ts: 0 }
@@ -174,7 +174,7 @@
       priority: 'P1 · 视觉',
       goal: '采集→灰度→二值化(Otsu)→扫线→补线→中线偏差→舵机 PD + 电机 PID，十字/圆环/坡道元素识别，为智能车打底。',
       lessons: [
-        { id: 'l-cv-1', title: 'Python + NumPy 基础补完（切片 / 广播）', dur: '', url: 'https://www.bilibili.com/video/BV1hE411t7RN', author: '我是土堆', done: true, ts: 0 },
+        { id: 'l-cv-1', title: 'Python + NumPy 基础补完（切片 / 广播）', dur: '', url: 'https://www.bilibili.com/video/BV1hE411t7RN', author: '我是土堆', done: false, ts: 0 },
         { id: 'l-cv-2', title: 'OpenCV 环境 + MaixCam2 / 摄像头读帧', dur: '', url: 'https://book.openmv.cc/', author: '星瞳科技', done: false, ts: 0 },
         { id: 'l-cv-3', title: '灰度化 + 二值化（Otsu 自适应阈值）', dur: '', url: 'https://singtown.com/learn', author: '星瞳科技', done: false, ts: 0 },
         { id: 'l-cv-4', title: 'ROI + 底部向上扫线提取左右边线', dur: '', url: 'https://www.bilibili.com/video/BV1KF4tz3EZw', author: 'JNU智能车协会', done: false, ts: 0 },
@@ -199,8 +199,8 @@
       priority: 'P0–P2 · 主线',
       goal: '正点原子 ATK-DL2K0300 上手 → 交叉编译 / 驱动 / 外设 / 摄像头采集，龙芯 LoongArch 嵌入式 Linux 基本功，为走马观碑整车打底。',
       lessons: [
-        { id: 'l-loong-1', title: '板卡上电 + 串口登录系统', dur: '', url: 'http://www.openedv.com/docs/boards/arm-linux/LX2K0300.html', author: '正点原子', done: true, ts: 0 },
-        { id: 'l-loong-2', title: '文档通读 + A / B 盘资料下载', dur: '', url: 'https://www.bilibili.com/video/BV1ohPseYEdf', author: '正点原子', done: true, ts: 0 },
+        { id: 'l-loong-1', title: '板卡上电 + 串口登录系统', dur: '', url: 'http://www.openedv.com/docs/boards/arm-linux/LX2K0300.html', author: '正点原子', done: false, ts: 0 },
+        { id: 'l-loong-2', title: '文档通读 + A / B 盘资料下载', dur: '', url: 'https://www.bilibili.com/video/BV1ohPseYEdf', author: '正点原子', done: false, ts: 0 },
         { id: 'l-loong-3', title: 'Linux 开发环境 + 交叉编译工具链', dur: '', url: 'http://www.openedv.com/docs/boards/arm-linux/LX2K0300.html', author: '正点原子', done: false, ts: 0 },
         { id: 'l-loong-4', title: '交叉编译 Hello World 上板运行', dur: '', url: 'https://gitcode.com/open-loongarch/docs-2k0300', author: 'open-loongarch', done: false, ts: 0 },
         { id: 'l-loong-5', title: 'GPIO / LED 字符设备驱动', dur: '', url: 'http://www.openedv.com/docs/boards/arm-linux/LX2K0300.html', author: '正点原子', done: false, ts: 0 },
@@ -246,9 +246,9 @@
       priority: 'P2–P3 · 电赛',
       goal: 'TI 官方 LP-MSPM0G3507（非立创）：无名创新 / Torri_Yin 例程 + TI Academy，外设全家桶 → 控制题真题演练。',
       lessons: [
-        { id: 'l-m0-1', title: 'MSPM0-SDK + CCS + SysConfig 环境', dur: '', url: 'https://www.ti.com.cn/tool/cn/LP-MSPM0G3507', author: 'Texas Instruments', done: true, ts: 0 },
-        { id: 'l-m0-2', title: '无名创新例程：GPIO / 点灯 / 按键', dur: '', url: 'https://www.bilibili.com/video/BV1Ei421Q7n9', author: '无名创新', done: true, ts: 0 },
-        { id: 'l-m0-3', title: 'I2C OLED 显示 + 串口通信', dur: '', url: 'https://gitee.com/namelesstech/lp_mspm0g3507_mini_examples', author: '无名创新', done: true, ts: 0 },
+        { id: 'l-m0-1', title: 'MSPM0-SDK + CCS + SysConfig 环境', dur: '', url: 'https://www.ti.com.cn/tool/cn/LP-MSPM0G3507', author: 'Texas Instruments', done: false, ts: 0 },
+        { id: 'l-m0-2', title: '无名创新例程：GPIO / 点灯 / 按键', dur: '', url: 'https://www.bilibili.com/video/BV1Ei421Q7n9', author: '无名创新', done: false, ts: 0 },
+        { id: 'l-m0-3', title: 'I2C OLED 显示 + 串口通信', dur: '', url: 'https://gitee.com/namelesstech/lp_mspm0g3507_mini_examples', author: '无名创新', done: false, ts: 0 },
         { id: 'l-m0-4', title: '定时器 + PWM 电机驱动', dur: '', url: 'https://gitee.com/namelesstech/lp_mspm0g3507_mini_examples', author: '无名创新', done: false, ts: 0 },
         { id: 'l-m0-5', title: 'ADC / DAC + 编码器测速', dur: '', url: 'https://gitee.com/namelesstech/lp_mspm0g3507_mini_examples', author: '无名创新', done: false, ts: 0 },
         { id: 'l-m0-6', title: 'SPI + MPU6050 姿态读取（I2C）', dur: '', url: 'https://www.bilibili.com/video/BV1Ei421Q7n9', author: '无名创新', done: false, ts: 0 },
@@ -614,46 +614,6 @@
       tags: ['YOLOv5', '推理'] }
   ];
 
-  /* 打卡日志备注池（按模块），用于生成可信的演示历史 */
-  const notePool = {
-    'm-stm32': ['江协标准库 P13 定时器，PWM 呼吸灯点亮', '编码器测速例程跑通，串口打印转速', 'OLED 显示驱动移植成功', '野火 HAL + CubeMX 工程建好，F407 点灯', 'ADC 采集电位器，DMA 搬运省 CPU'],
-    'm-hw': ['嘉立创 EDA 画完平衡车底板，DRC 通过', '打样到货，焊接上电测试正常', 'DRV8701 驱动板选型，对照数据手册', '电源 BUCK 5V/3.3V 纹波测了，加滤波', '工科男孙老师运放讲解，补模电'],
-    'm-pid': ['江协 PID 理论 P3–P5，笔记整理完', '速度环调参：Ki 加大后终于不振荡了', '倒立摆角度环站起来 3 秒，继续调 Kd', '串级 PID 框图默写了一遍', '平衡车机械结构检查，电机虚焊重焊'],
-    'm-cv': ['OpenCV 环境装好，MaixCam2 读帧成功', '二值化 Otsu 阈值调了一晚上，光照影响真大', '巡线偏差公式推导 + 仿真验证', '看 JNU 视觉培训，记了前瞻思路', '圆环识别状态机画了草图'],
-    'm-loong': ['板子上电，串口登录成功', '正点原子文档读了两章，A 盘下载中', '交叉编译环境配置，Makefile 写顺了', 'GPIO 驱动例程跑通，LED 闪烁', 'B 盘虚拟机导入完成，省了不少事'],
-    'm-yolo': ['土堆 PyTorch P1–P6 跟练', 'tensor 操作练了半小时，广播机制懂了', 'YOLOv8 官方权重推理跑通', 'MaixCam2（AX630C）MaixPy 环境装好', '采集了 50 张赛道目标照片'],
-    'm-mspm0': ['SysConfig 配置 PWM，电机转起来了', '无名创新编码器例程跑通（官方板）', 'MPU6050 读到原始数据，零漂要处理', '无名创新 I2C OLED 教程跟完', '往年控制题读题，思路整理'],
-    'm-ros2': ['Ubuntu 虚拟机装好', '鱼香一键脚本装 ROS2，一次成功', '古月 21 讲看到第 4 讲，话题通信懂了', 'turtlesim 画圆，命令行玩熟了'],
-    'm-drone': ['四轴教程简介看完，先放一放', '姿态解算概念预习']
-  };
-
-  /* ── 演示打卡历史（带 memberId = 模块归属人） ── */
-  const pad2 = n => String(n).padStart(2, '0');
-  const dstr = d => d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
-  const addDays = (s, n) => { const d = new Date(s + 'T12:00:00'); d.setDate(d.getDate() + n); return dstr(d); };
-  function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
-  function seedCheckins(ownerOf) {
-    const rnd = mulberry32(20261112);
-    const pick = arr => arr[Math.floor(rnd() * arr.length)];
-    const weighted = pairs => { let r = rnd(), acc = 0; for (const [id, w] of pairs) { acc += w; if (r <= acc) return id; } return pairs[0][0]; };
-    const early = [['m-stm32', .3], ['m-hw', .2], ['m-pid', .18], ['m-mspm0', .12], ['m-loong', .1], ['m-cv', .06], ['m-yolo', .03], ['m-ros2', .01]];
-    const late = [['m-pid', .22], ['m-hw', .2], ['m-cv', .18], ['m-loong', .16], ['m-mspm0', .1], ['m-yolo', .08], ['m-stm32', .03], ['m-ros2', .02], ['m-drone', .01]];
-    const out = []; const t = dstr(new Date());
-    const mk = (i, suffix, mid, mins, hour) => {
-      const date = addDays(t, -i);
-      out.push({ id: 'c-seed-' + i + suffix, date, moduleId: mid, memberId: ownerOf[mid] || 'me', minutes: mins, note: pick(notePool[mid] || ['学习打卡']), ts: new Date(date + 'T' + hour + ':00').getTime() });
-    };
-    for (let i = 150; i >= 1; i--) {
-      const date = addDays(t, -i);
-      const dow = new Date(date + 'T12:00:00').getDay();
-      const p = (dow === 0 || dow === 6) ? .38 : .66;
-      if (i > 4 && rnd() > p) continue;           // 最近 4 天保证连续，今天未打卡
-      const mid = weighted(i > 75 ? early : late);
-      mk(i, '', mid, pick([30, 45, 60, 60, 90, 90, 120, 150]), '20:30');
-      if (rnd() < .12) mk(i, 'b', weighted(late), pick([30, 45, 60]), '22:00');
-    }
-    return out;
-  }
   const clone = o => JSON.parse(JSON.stringify(o));
 
   /* ═══════════ v4 · 模块库（catalog）+ 学习路线 ═══════════
@@ -979,7 +939,6 @@
       }
       return instantiate(tpl, tpl.suggestOwner, PHASE_STAGE[tpl.phase]);
     });
-    const ownerOf = {}; mods.forEach(m => { ownerOf[m.id] = m.ownerId; });
     return {
       version: SCHEMA,
       members: members.map(m => Object.assign({}, m)),
@@ -987,13 +946,13 @@
       modules: mods,
       hardware: clone(hardware),
       resources: clone(resources),
-      checkins: seedCheckins(ownerOf),
+      checkins: [],
       createdAt: Date.now()
     };
   }
 
   /* ── 一次性增量升级 v3 → v4（幂等，客户端 / 服务端共用）──
-   * 保留打卡 / 密码 / 自定义模块 / 课时进度；只回填 catalogId / dir / phase 并 remap 已知模块阶段；
+   * 保留打卡 / 自定义模块 / 课时进度；只回填 catalogId / dir / phase 并 remap 已知模块阶段；
    * 仅当原 version===3 时补齐缺失主线（绝不每次 sanitize 执行，避免被删模块复活）。 */
   function upgradeToV4(s) {
     if (!s || typeof s !== 'object') return s;
@@ -1037,5 +996,5 @@
     return s;
   }
 
-  return { members, stages, hardware, modules, resources, notePool, buildState, catalog, routeOrder, SCHEMA, upgradeToV4, PHASE_STAGE, legacyMap, instantiate };
+  return { members, stages, hardware, modules, resources, buildState, catalog, routeOrder, SCHEMA, upgradeToV4, PHASE_STAGE, legacyMap, instantiate };
 });

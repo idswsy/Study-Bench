@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════════════════════
    学习工作台 · app.js — 团队多用户：登录 / 分工 / 监督 / 同步
-   ─ 存储适配器：boot 探测 /api/ping → 局域网服务 / 本机演示
-   ─ 状态 v2：members（分工）+ module.ownerId + checkin.memberId
+   ─ 存储适配器：boot 探测 /api/ping → 局域网服务 / 本机离线
+   ─ 状态 v4：members（分工）+ module.ownerId + checkin.memberId
    ─ 登录是团队身份门：点击成员卡片免密进入，名称可自定义
    ═══════════════════════════════════════════════════════════ */
 (function () {
@@ -82,7 +82,7 @@ const icon = (n, cls) => '<svg viewBox="0 0 24 24" fill="none" stroke="currentCo
 const starIcon = on => '<svg viewBox="0 0 24 24" fill="' + (on ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + P.star + '</svg>';
 
 /* ── 状态 / 存储 ── */
-const KEY = 'studybench.v1';
+const KEY = 'studybench.v2';
 const SESSION_KEY = 'studybench.session';
 let S = null;
 let store = null;
@@ -464,7 +464,7 @@ function renderLogin() {
   const members = store.members();
   $('#loginMode').innerHTML = store.mode === 'server'
     ? icon('wifi') + '局域网同步模式 · 三人共享一份团队数据'
-    : icon('database') + '本机演示模式 · 数据存于当前浏览器';
+    : icon('database') + '本机离线模式 · 数据存于当前浏览器';
   $('#loginMembers').innerHTML = members.map(m =>
     '<div class="login-member" style="--mc:' + m.color + '" data-id="' + m.id + '">' +
     '<button type="button" class="lm-enter" data-action="login-enter" data-id="' + m.id + '" title="以「' + esc(m.name) + '」身份进入工作台">' +
@@ -1028,7 +1028,7 @@ function renderData() {
   $('#aboutTitle').innerHTML = icon('info') + '说明';
   $('#exportBtn').innerHTML = icon('download') + '导出团队备份 JSON<small>study-bench-team-' + today() + '.json</small>';
   $('#importBtn').innerHTML = icon('upload') + '导入团队备份 JSON<small>覆盖当前数据</small>';
-  $('#resetBtn').innerHTML = icon('reset') + '重置为演示数据<small>清空所有修改</small>';
+  $('#resetBtn').innerHTML = icon('reset') + '重置全部数据<small>清空所有修改</small>';
   const rows = S.modules.map(m => ({ m, v: modMinutes(m.id) })).sort((a, b) => b.v - a.v);
   const max = Math.max(1, ...rows.map(r => r.v));
   $('#modBars').innerHTML = rows.length ? rows.map(r => {
@@ -1040,7 +1040,7 @@ function renderData() {
   const m = me();
   $('#accountBox').innerHTML =
     '<div class="acc-id"><span class="mem-avatar" style="--mc:' + m.color + '">' + esc(m.name.slice(0, 1)) + '</span><div><b>' + esc(m.name) + '</b><small>' + esc(m.role) + '</small></div></div>' +
-    '<div class="acc-mode">' + (store.mode === 'server' ? icon('wifi') + '局域网同步 · 服务端 data/team.json · rev ' + lastRev : icon('database') + '本机演示 · 数据存于当前浏览器 localStorage') + '</div>' +
+    '<div class="acc-mode">' + (store.mode === 'server' ? icon('wifi') + '局域网同步 · 服务端 data/team.json · rev ' + lastRev : icon('database') + '本机离线 · 数据存于当前浏览器 localStorage') + '</div>' +
     '<div class="acc-actions"><button class="btn sm" type="button" data-action="rename-member" data-id="' + m.id + '">' + icon('edit') + '编辑名称</button>' +
     '<button class="btn sm" type="button" data-action="switch-member">' + icon('users') + '切换身份</button>' +
     '<button class="btn sm danger" type="button" data-action="logout">' + icon('logout') + '退出登录</button></div>';
@@ -1057,10 +1057,10 @@ function renderData() {
     '<li>学习模块按<b>基础 → 单项技能 → 实战练手 → 竞赛冲刺</b>路线组织：先学技能、配套练手项目，再整合整车 / 整机。每个模块含<b>逐节课时</b>与<b>练手项目里程碑</b>，进度 =（已完成课时 + 里程碑）/ 总数；想加新内容到「模块库」挑选加入计划。</li>' +
     '<li>三人按主流分工（硬件 PCB / 嵌入式控制 / 视觉算法）指派模块负责人，各自推进、相互监督；「硬件装备板」登记已有装备与待购清单，缺的可再买。</li>' +
     '<li>标有 <span class="badge ok">已核实</span> 的资源链接结合 B 站 / 社区攻略评价筛选；<span class="badge" style="color:var(--violet)">搜索直达</span> 类为站内搜索入口，请站内确认最新合集。</li>' +
-    '<li>点击成员卡片即可<b>免密进入</b>，名称可在登录页铅笔按钮或「数据 → 编辑名称」自定义（如「我 / 队员一」）；演示打卡历史为自动生成，可在上方一键重置。</li>' +
+    '<li>点击成员卡片即可<b>免密进入</b>，名称可在登录页铅笔按钮或「数据 → 编辑名称」自定义（如「我 / 队员一」）；初始进度为零，打卡与课时完成态由团队自行记录。</li>' +
     (store.mode === 'server'
       ? '<li><b>局域网同步模式</b>：一人运行 <code>node server.js</code>，队友浏览器访问 <code>http://&lt;本机IP&gt;:8787</code>，三人共享同一份团队数据，打卡 / 课时 / 名称实时互相可见。导出备份与分享码只含团队学习数据。</li>'
-      : '<li><b>本机演示模式</b>：双击 index.html 即可运行，数据仅存于当前浏览器。三人可在此切换身份体验；要真正多机同步，运行 <code>node server.js</code> 用局域网访问，<b>无局域网时用上方「分享码合并」</b>把进度发给队友汇总。</li>') +
+      : '<li><b>本机离线模式</b>：双击 index.html 即可运行，数据仅存于当前浏览器。三人可在此切换身份体验；要真正多机同步，运行 <code>node server.js</code> 用局域网访问，<b>无局域网时用上方「分享码合并」</b>把进度发给队友汇总。</li>') +
     '</ul>';
   renderConnection();
 }
@@ -1519,11 +1519,11 @@ function handleImportFile(file) {
 }
 function resetAll() {
   openConfirm({
-    title: '重置为演示数据', sub: '清空所有修改与打卡记录', danger: true, okLabel: '确认重置',
-    text: '将恢复 ' + SEED.routeOrder.length + ' 个主线模块（含课时与练手项目里程碑，按学习路线排序）、' + SEED.resources.length + ' 条核实资料、' + SEED.hardware.length + ' 项硬件装备与自动生成的演示打卡历史，并按默认分工指派负责人；模块库另有 ' + SEED.catalog.length + ' 个基础 / 可选模板可随时加入。<b>你添加的模块、课时、资料与真实打卡都会丢失</b>，建议先导出备份。',
+    title: '重置全部数据', sub: '清空所有修改与打卡记录', danger: true, okLabel: '确认重置',
+    text: '将恢复 ' + SEED.routeOrder.length + ' 个主线模块（含课时与练手项目里程碑，按学习路线排序）、' + SEED.resources.length + ' 条核实资料与 ' + SEED.hardware.length + ' 项硬件装备，进度归零并按默认分工指派负责人；模块库另有 ' + SEED.catalog.length + ' 个基础 / 可选模板可随时加入。<b>你添加的模块、课时、资料与真实打卡都会丢失</b>，建议先导出备份。',
     onOk: () => {
       S = sanitizeState(SEED.buildState());
-      persist(); closeDrawer(); ui.selModule = null; renderAll(); toast('已重置为演示数据', 'ok');
+      persist(); closeDrawer(); ui.selModule = null; renderAll(); toast('已重置全部数据', 'ok');
     }
   });
 }
@@ -1608,7 +1608,7 @@ function renderConnection() {
   const title = $('#connTitle'); if (title) title.innerHTML = icon('wifi') + '连接与同步<span class="hint">局域网实时 / 分享码离线合并</span>';
   const isServer = store.mode === 'server';
   badge.className = 'conn-badge ' + (isServer ? 'server' : 'local');
-  badge.innerHTML = isServer ? icon('wifi') + '局域网实时同步' : icon('database') + '本机离线演示';
+  badge.innerHTML = isServer ? icon('wifi') + '局域网实时同步' : icon('database') + '本机离线模式';
   const lan = $('#connLanStatus');
   if (lan) lan.innerHTML = isServer
     ? icon('check') + '<span>已连接服务端 · rev ' + lastRev + ' · 每 4 秒自动同步，三人实时共享一份数据</span>'
